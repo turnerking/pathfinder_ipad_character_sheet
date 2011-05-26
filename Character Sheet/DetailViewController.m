@@ -25,6 +25,12 @@
 
 @synthesize popoverController=_myPopoverController;
 
+@synthesize rollButton;
+@synthesize rollLabel;
+@synthesize strTextField;
+@synthesize strModifierLabel, dexModifierLabel, conModifierLabel, intModifierLabel, wisModifierLabel, chaModifierLabel;
+@synthesize strCollection;
+
 #pragma mark - Managing the detail item
 
 /*
@@ -76,6 +82,47 @@
     return YES;
 }
 
+- (int)rollDie:(int)numberOfSides{
+  return (rand() % numberOfSides) + 1;
+}
+
+- (IBAction)roll:(id)sender{
+  UIButton *button = (UIButton *)sender;
+  UILabel *modifier;
+  if (button.tag == 11) {
+    modifier = strModifierLabel;
+  } else if (button.tag == 12) {
+    modifier = dexModifierLabel;
+  } else if (button.tag == 13) {
+    modifier = conModifierLabel;
+  } else if (button.tag == 14) {
+    modifier = intModifierLabel;
+  } else if (button.tag == 15) {
+    modifier = wisModifierLabel;
+  } else if (button.tag == 16) {
+    modifier = chaModifierLabel;
+  }
+  
+  int die = 20;
+  NSString *rollText = [NSString stringWithFormat:@"%d", [self rollDie:die] + [modifier.text intValue]];
+	[self.rollLabel setText:rollText];
+  rollLabel.text = rollText;
+}
+
+
+- (void)updateModifier:(UILabel*)labelToUpdate withTextField:(UITextField*)changedField{
+  int base_value = ([changedField.text intValue] - 10);
+  NSLog(@"%d", base_value);
+  int modififier = ((base_value % 2 == 0) ? base_value / 2 : ((base_value - 1) / 2));
+  NSLog(@"%d", (base_value % 2));
+  NSString *plus = (modififier < 0) ? @"" : @"+";
+  NSString *modifier_text = [NSString stringWithFormat:@"%@%d", plus, modififier];
+  [labelToUpdate setText:modifier_text];
+}
+
+- (IBAction)updateStrength:(id)sender{
+  [self updateModifier:self.strModifierLabel withTextField:self.strTextField];
+}
 #pragma mark - Split view support
 
 - (void)splitViewController:(UISplitViewController *)svc willHideViewController:(UIViewController *)aViewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController: (UIPopoverController *)pc
